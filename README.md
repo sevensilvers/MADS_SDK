@@ -136,3 +136,6 @@ Initialize myApp
 new myApp();
 ```
 
+## Questions? Feedbacks?
+
+Please feel free to contact **Ninjoe** @ **_ninjoe@mobileads.com_** or **_joequah1@gmail.com_** or **_joequah1_** in Skype
