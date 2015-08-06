@@ -38,10 +38,8 @@ var mads = function () {
 
 /* Generate unique ID */
 mads.prototype.uniqId = function () {
-    var d = new Date();
-    d.getTime();
     
-    return d;
+    return new Date().getTime();
 }
 
 /* Link Opner */
