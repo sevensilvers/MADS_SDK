@@ -1,6 +1,6 @@
 /*
 *
-* mads - version 2  
+* mads - version 2.00.01  
 * Copyright (c) 2015, Ninjoe
 * Dual licensed under the MIT or GPL Version 2 licenses.
 * https://en.wikipedia.org/wiki/MIT_License
@@ -55,7 +55,7 @@ mads.prototype.linkOpener = function (url) {
 }
 
 /* tracker */
-mads.prototype.tracker = function (type, name) {
+mads.prototype.tracker = function (tt, type, name) {
     
     /* 
     * name is used to make sure that particular tracker is tracked for only once 
@@ -66,7 +66,13 @@ mads.prototype.tracker = function (type, name) {
     if ( typeof this.custTracker != 'undefined' && this.custTracker != '' && this.tracked.indexOf(name) == -1 ) {
         for (var i = 0; i < this.custTracker.length; i++) {
             var img = document.createElement('img');
-            img.src = this.custTracker[i] + type + '&' + this.id;
+            
+            /* Insert Macro */
+            var src = this.custTracker[i].replace('{{type}}', type);
+            src = src.replace('{{tt}}', tt);
+            /* */
+            img.src = src + '&' + this.id;
+            
             img.style.display = 'none';
             this.bodyTag.appendChild(img);
             
@@ -124,10 +130,10 @@ var testunit = function () {
             <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p> \
         </div></div>';
     
-    app.custTracker = ['http://www.tracker.com?type=','http://www.tracker2.com?type='];
+    app.custTracker = ['http://www.tracker.com?type={{type}}&tt={{tt}}','http://www.tracker2.com?type={{type}}'];
     
-    app.tracker('test');
-    app.tracker('test','name');
+    app.tracker('CTR', 'test');
+    app.tracker('E','test','name');
     
     app.linkOpener('http://www.google.com');
 }

@@ -121,13 +121,13 @@ To open any links, please use our SDK. Do not use html href or or javascript win
 sdk.linkOpener('http://www.mobileads.com');
 ```
 
-Tracker. We will be triggering the same value tracker for only once. So if you ever need to track same value tracker in different places, please put in a unique name for each of them too. 
+Tracker. 2 parameters which are required is the type of the tracker and the value of tracker. We will be triggering the same value tracker for only once. So if you ever need to track same value tracker in different places, please put in a unique name for each of them too. 
 
 ```javascript
-sdk.tracker('value');
+sdk.tracker('CTR', 'value');
 
 /* With optional name */
-sdk.tracker('value', 'name'); 
+sdk.tracker('E', 'value', 'name'); 
 ```
     
 Initialize myApp
