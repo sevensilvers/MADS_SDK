@@ -55,7 +55,7 @@ mads.prototype.linkOpener = function (url) {
 }
 
 /* tracker */
-mads.prototype.tracker = function (tt, type, name) {
+mads.prototype.tracker = function (tt, type, name, value) {
     
     /* 
     * name is used to make sure that particular tracker is tracked for only once 
@@ -67,9 +67,14 @@ mads.prototype.tracker = function (tt, type, name) {
         for (var i = 0; i < this.custTracker.length; i++) {
             var img = document.createElement('img');
             
+            if (typeof value == 'undefined') {
+                value = '';
+            }
+            
             /* Insert Macro */
             var src = this.custTracker[i].replace('{{type}}', type);
             src = src.replace('{{tt}}', tt);
+            src = src.replace('{{value}}', value);
             /* */
             img.src = src + '&' + this.id;
             
