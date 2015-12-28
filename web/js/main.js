@@ -17,6 +17,22 @@ var mads = function () {
         this.custTracker = [];
     }
     
+    if (typeof ct == 'undefined' && typeof rma != 'undefined') {
+        this.ct = rma.ct;
+    } else if (typeof ct != 'undefined') {
+        this.ct = ct;
+    } else {
+        this.ct = [];
+    }
+    
+    if (typeof cte == 'undefined' && typeof rma != 'undefined') {
+        this.cte = rma.cte;
+    } else if (typeof cte != 'undefined') {
+        this.cte = cte;
+    } else {
+        this.cte = [];
+    }
+    
     /* Unique ID on each initialise */
     this.id = this.uniqId();
     
