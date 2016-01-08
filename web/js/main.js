@@ -17,6 +17,7 @@ var mads = function () {
         this.custTracker = [];
     }
     
+    /* CT */
     if (typeof ct == 'undefined' && typeof rma != 'undefined') {
         this.ct = rma.ct;
     } else if (typeof ct != 'undefined') {
@@ -25,6 +26,7 @@ var mads = function () {
         this.ct = [];
     }
     
+    /* CTE */
     if (typeof cte == 'undefined' && typeof rma != 'undefined') {
         this.cte = rma.cte;
     } else if (typeof cte != 'undefined') {
@@ -38,6 +40,12 @@ var mads = function () {
     
     /* Tracked tracker */
     this.tracked = [];
+    /* each engagement type should be track for only once and also the first tracker only */
+    this.trackedEngagementType = [];
+    /* trackers which should not have engagement type */
+    this.engagementTypeExlude = [];
+    /* first engagement */
+    this.firstEngagementTracked = false;
     
     /* Body Tag */
     this.bodyTag = document.getElementsByTagName('body')[0];
@@ -62,6 +70,7 @@ mads.prototype.uniqId = function () {
 mads.prototype.linkOpener = function (url) {
 
 	if(typeof url != "undefined" && url !=""){
+        
 		if (typeof mraid !== 'undefined') {
 			mraid.open(url);
 		}else{
@@ -89,8 +98,22 @@ mads.prototype.tracker = function (tt, type, name, value) {
             
             /* Insert Macro */
             var src = this.custTracker[i].replace('{{type}}', type);
-            src = src.replace('{{tt}}', tt);
             src = src.replace('{{value}}', value);
+            
+            /* Insert TT's macro */
+            if (this.trackedEngagementType.indexOf(tt) != '-1' || this.engagementTypeExlude.indexOf(tt) != '-1') {
+                src = src.replace('tt={{tt}}', '');
+            } else {
+                src = src.replace('{{tt}}', tt);
+                this.trackedEngagementType.push(tt);
+            }
+            
+            /* Append ty for first tracker only */
+            if (!this.firstEngagementTracked) {
+                src = src + '&ty=E';
+                this.firstEngagementTracked = true;
+            }
+            
             /* */
             img.src = src + '&' + this.id;
             
@@ -151,10 +174,11 @@ var testunit = function () {
             <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p> \
         </div></div>';
     
-    app.custTracker = ['http://www.tracker.com?type={{type}}&tt={{tt}}','http://www.tracker2.com?type={{type}}'];
+    app.custTracker = ['http://www.tracker2.com?type={{type}}&tt={{tt}}','http://www.tracker.com?type={{type}}'];
     
     app.tracker('CTR', 'test');
     app.tracker('E','test','name');
+    app.tracker('E','test','name2');
     
     app.linkOpener('http://www.google.com');
 }
