@@ -58,6 +58,14 @@ var mads = function () {
     
     /* URL Path */
     this.path = typeof rma != 'undefined' ? rma.customize.src : '';
+
+    /* Solve {2} issues */
+    for (var i = 0; i < this.custTracker.length; i++) {
+        if (this.custTracker[i].indexOf('{2}') != -1) {
+            this.custTracker[i] = this.custTracker[i].replace('{2}', '{{type}}');
+            this.tracker('N', 'macro_replaced');
+        }
+    }
 };
 
 /* Generate unique ID */
