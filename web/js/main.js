@@ -116,7 +116,7 @@ mads.prototype.tracker = function (tt, type, name, value) {
             }
 
             /* Append ty for first tracker only */
-            if (!this.firstEngagementTracked) {
+            if (!this.firstEngagementTracked && tt == 'E') {
                 src = src + '&ty=E';
                 this.firstEngagementTracked = true;
             }
