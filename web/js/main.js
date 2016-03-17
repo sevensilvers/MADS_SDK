@@ -34,6 +34,15 @@ var mads = function () {
     } else {
         this.cte = [];
     }
+    
+    /* tags */
+    if (typeof tags == 'undefined' && typeof tags != 'undefined') {
+        this.tags = this.tagsProcess(rma.tags);
+    } else if (typeof tags != 'undefined') {
+        this.tags = this.tagsProcess(tags);
+    } else {
+        this.tags = '';
+    }
 
     /* Unique ID on each initialise */
     this.id = this.uniqId();
@@ -71,6 +80,19 @@ var mads = function () {
 mads.prototype.uniqId = function () {
 
     return new Date().getTime();
+}
+
+mads.prototype.tagsProcess = function (tags) {
+    
+    var tagsStr = '';
+    
+    for(var obj in tags){
+        if(tags.hasOwnProperty(obj)){
+            tagsStr+= '&'+obj + '=' + tags[obj];
+        }
+    }     
+    
+    return tagsStr;
 }
 
 /* Link Opner */
@@ -122,7 +144,7 @@ mads.prototype.tracker = function (tt, type, name, value) {
             }
 
             /* */
-            img.src = src + '&' + this.id;
+            img.src = src + this.tags + '&' + this.id;
 
             img.style.display = 'none';
             this.bodyTag.appendChild(img);
