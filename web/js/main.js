@@ -7,7 +7,34 @@
 * https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
 *
 */
-var mads = function () {
+var mads = function (options) {
+
+    var _this = this;
+
+    this.render = options.render;
+
+    /* Body Tag */
+    this.bodyTag = document.getElementsByTagName('body')[0];
+
+    /* Head Tag */
+    this.headTag = document.getElementsByTagName('head')[0];
+
+    /* json */
+    if (typeof json == 'undefined' && typeof rma != 'undefined') {
+        this.json = rma.customize.json;
+    } else if (typeof json != 'undefined') {
+        this.json = json;
+    } else {
+        this.json = '';
+    }
+
+    /* load json for assets */
+    this.loadJs(this.json, function () {
+        _this.data = json_data;
+
+        _this.render.render();
+    }); 
+
     /* Get Tracker */
     if (typeof custTracker == 'undefined' && typeof rma != 'undefined') {
         this.custTracker = rma.customize.custTracker;
@@ -55,12 +82,6 @@ var mads = function () {
     this.engagementTypeExlude = [];
     /* first engagement */
     this.firstEngagementTracked = false;
-
-    /* Body Tag */
-    this.bodyTag = document.getElementsByTagName('body')[0];
-
-    /* Head Tag */
-    this.headTag = document.getElementsByTagName('head')[0];
 
     /* RMA Widget - Content Area */
     this.contentTag = document.getElementById('rma-widget');
@@ -182,32 +203,48 @@ mads.prototype.loadCss = function (href) {
 *
 */
 var testunit = function () {
-    var app = new mads();
 
-    console.log(typeof app.bodyTag != 'undefined');
-    console.log(typeof app.headTag != 'undefined');
-    console.log(typeof app.custTracker != 'undefined');
-    console.log(typeof app.path != 'undefined');
-    console.log(typeof app.contentTag != 'undefined');
+    /* pass in object for render callback */
+    this.app = new mads({
+        'render' : this
+    });
 
-    app.loadJs('https://code.jquery.com/jquery-1.11.3.min.js',function () {
+    console.log(typeof this.app.bodyTag != 'undefined');
+    console.log(typeof this.app.headTag != 'undefined');
+    console.log(typeof this.app.custTracker != 'undefined');
+    console.log(typeof this.app.path != 'undefined');
+    console.log(typeof this.app.contentTag != 'undefined');
+
+    this.app.loadJs('https://code.jquery.com/jquery-1.11.3.min.js',function () {
         console.log(typeof window.jQuery != 'undefined');
     });
 
-    app.loadCss('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css');
+    this.app.loadCss('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css');
+}
 
-    app.contentTag.innerHTML =
+/* 
+* render function 
+* - render has to be done in render function 
+* - render will be called once json data loaded
+*/
+testunit.prototype.render = function () { 
+
+    console.log(this.app.data);
+    
+    this.app.contentTag.innerHTML =
         '<div class="container"><div class="jumbotron"> \
             <h1>Hello, world!</h1> \
             <p>...</p> \
             <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p> \
         </div></div>';
 
-    app.custTracker = ['http://www.tracker2.com?type={{type}}&tt={{tt}}','http://www.tracker.com?type={{type}}'];
+    this.app.custTracker = ['http://www.tracker2.com?type={{type}}&tt={{tt}}','http://www.tracker.com?type={{type}}'];
 
-    app.tracker('CTR', 'test');
-    app.tracker('E','test','name');
-    app.tracker('E','test','name2');
+    this.app.tracker('CTR', 'test');
+    this.app.tracker('E','test','name');
+    this.app.tracker('E','test','name2');
 
-    app.linkOpener('http://www.google.com');
+    this.app.linkOpener('http://www.google.com');
 }
+
+new testunit();
