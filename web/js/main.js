@@ -28,6 +28,17 @@ var mads = function (options) {
         this.json = '';
     }
 
+    /* fet */
+    if (typeof fet == 'undefined' && typeof rma != 'undefined') {
+        this.fet = rma.customize.fet;
+    } else if (typeof json != 'undefined') {
+        this.fet = fet;
+    } else {
+        this.fet = [];
+    }
+
+    this.fetTracked = false;
+
     /* load json for assets */
     this.loadJs(this.json, function () {
         _this.data = json_data;
@@ -137,6 +148,17 @@ mads.prototype.tracker = function (tt, type, name, value) {
     * there might have the same type in different location, so it will need the name to differentiate them
     */
     name = name || type;
+
+    if ( tt == 'E' && !this.fetTracked ) {
+        for ( var i = 0; i < this.fet.length; i++ ) {
+            var t = document.createElement('img');
+            t.src = this.fet[i];
+
+            t.style.display = 'none';
+            this.bodyTag.appendChild(t);
+        }
+        this.fetTracked = true;
+    }
 
     if ( typeof this.custTracker != 'undefined' && this.custTracker != '' && this.tracked.indexOf(name) == -1 ) {
         for (var i = 0; i < this.custTracker.length; i++) {
