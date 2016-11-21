@@ -136,6 +136,11 @@ Initialize myApp
 new myApp();
 ```
 
+## Changelog 
+
+- 1.0.1 - ct and cte 
+-- add in support for CT and CTE in linkOpener 
+
 ## Questions? Feedbacks?
 
 Please feel free to contact **Ninjoe** @ **_ninjoe@mobileads.com_** or **_joequah1@gmail.com_** or **_joequah1_** in Skype

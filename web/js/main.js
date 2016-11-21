@@ -132,11 +132,19 @@ mads.prototype.linkOpener = function (url) {
 
 	if(typeof url != "undefined" && url !=""){
 
+        if(typeof this.ct != 'undefined' && this.ct != '') {
+            url = this.ct + encodeURIComponent(url);
+        }
+
 		if (typeof mraid !== 'undefined') {
 			mraid.open(url);
 		}else{
 			window.open(url);
 		}
+
+        if(typeof this.cte != 'undefined' && this.cte != '') {
+            this.imageTracker(this.cte);
+        }
 	}
 }
 
@@ -196,6 +204,16 @@ mads.prototype.tracker = function (tt, type, name, value) {
         }
     }
 };
+
+mads.prototype.imageTracker = function (url) {
+    for ( var i = 0; i < url.length; i++ ) {
+        var t = document.createElement('img');
+        t.src = url[i];
+
+        t.style.display = 'none';
+        this.bodyTag.appendChild(t);
+    }
+}
 
 /* Load JS File */
 mads.prototype.loadJs = function (js, callback) {
