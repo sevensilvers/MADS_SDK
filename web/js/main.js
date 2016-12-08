@@ -30,8 +30,8 @@ var mads = function (options) {
 
     /* fet */
     if (typeof fet == 'undefined' && typeof rma != 'undefined') {
-        this.fet = rma.customize.fet;
-    } else if (typeof json != 'undefined') {
+        this.fet = typeof rma.fet == 'string' ? [rma.fet] : rma.fet;
+    } else if (typeof fet != 'undefined') {
         this.fet = fet;
     } else {
         this.fet = [];
