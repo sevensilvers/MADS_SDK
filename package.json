@@ -1,0 +1,22 @@
+{
+  "name": "MADS_SDK",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "NODE_ENV=production webpack -p",
+    "start": "NODE_ENV=development webpack-dev-server --open"
+  },
+  "repository": "git@github.com:mobileads-com/MADS_SDK.git",
+  "author": "Jeff Paltera <jeffpaltera@outlook.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-preset-env": "^1.5.1",
+    "copy-webpack-plugin": "^4.0.1",
+    "uglifyjs-webpack-plugin": "^0.4.3",
+    "webpack": "^2.6.1",
+    "webpack-dev-server": "^2.4.5"
+  },
+  "dependencies": {}
+}
