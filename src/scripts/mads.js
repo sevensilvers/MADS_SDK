@@ -15,20 +15,29 @@ export default class Mads {
       this.json = '/settings.json'
     }
 
-    if (this.json.indexOf('/') === 0) {
-      // get(this.json).then((resp) => {
-      //   this.data = resp.data;
-      //   this.render();
-      // });
+    if (this.json.indexOf('/') === 0 || this.json.indexOf('https://') === 0 || this.json.indexOf('http://') === 0) {
+      const xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            this.data = JSON.parse(xhr.responseText);
+            this.loadAd();
+          } else {
+            console.log('There was problem with the request.');
+          }
+        }
+      };
+      xhr.open('GET', this.json, true);
+      xhr.send();
     } else {
       this.data = constants.json;
-      this.render();
+      this.loadAd();
     }
 
     // Setup & get FET value
     this.fetTracked = false;
     if (constants.fet && window.rma) {
-      this.fet = typeof constants.fet == 'string' ? [window.rma.fet] : window.rma.fet;
+      this.fet = typeof constants.fet === 'string' ? [window.rma.fet] : window.rma.fet;
     } else if (constants.fet) {
       this.fet = constants.fet;
     } else {
@@ -74,11 +83,38 @@ export default class Mads {
     this.firstEngagementTracked = false;
     this.content = document.getElementById('rma-widget');
     this.path = typeof window.rma !== 'undefined' ? window.rma.customize.src : '';
-    for (var i = 0; i < this.custTracker.length; i++) {
+    for (let i = 0; i < this.custTracker.length; i++) {
       if (this.custTracker[i].indexOf('{2}') !== -1) {
         this.custTracker[i] = this.custTracker[i].replace('{2}', '{{type}}');
       }
     }
+    this.elems = {};
+  }
+
+  loadAd() {
+    const obs = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.target === this.content) {
+          for (let elem of this.content.querySelectorAll('*').values()) {
+            if (elem.id) {
+              this.elems[elem.id] = elem;
+            }
+          }
+          this.events();
+          obs.disconnect();
+        }
+      });
+    });
+
+    const config = { childList: true };
+
+    obs.observe(this.content, config);
+
+    this.render();
+    const cssText = this.style().replace(/(<br>|\s)/g, '');
+    const style = document.createElement('style');
+    style.innerText = cssText;
+    this.head.appendChild(style);
   }
 
   generateUniqueId() {
@@ -87,7 +123,7 @@ export default class Mads {
 
   processTags(tags) {
     let resultTags = '';
-    for (var tag in tags) {
+    for (let tag in tags) {
       if (tags.hasOwnProperty(tag)) {
         resultTags += '&' + tag + '=' + tags[obj];
       }
