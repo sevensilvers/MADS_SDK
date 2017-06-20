@@ -1,3 +1,5 @@
+/* global window */
+
 import Mads from './scripts/mads';
 
 class AdUnit extends Mads {
@@ -18,7 +20,7 @@ class AdUnit extends Mads {
       <div class="container" id="container">
         <div class="jumbotron">
           <h1>${this.data.title}</h1>
-          <p>...</p>
+          <p>${this.data.sample}</p>
           <p><a class="btn btn-primary btn-lg button" href="#">Learn More</a></p>
         </div>
       </div>
@@ -32,11 +34,13 @@ class AdUnit extends Mads {
   }
 
   style() {
+    const elems = this.elems;
+    console.log(elems);
     return `
       body {
         background: purple;
       }
-    `
+    `;
   }
 
   events() {

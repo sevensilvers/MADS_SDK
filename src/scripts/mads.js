@@ -1,8 +1,8 @@
+/* global document window XMLHttpRequest cte MutationObserver mraid */
 import constants from './constants';
 
 export default class Mads {
-  constructor(opt) {
-    // this.render = opt.render;
+  constructor() {
     this.body = document.getElementsByTagName('body')[0];
     this.head = document.getElementsByTagName('head')[0];
 
@@ -12,7 +12,7 @@ export default class Mads {
     } else if (constants.json) {
       this.json = constants.json;
     } else {
-      this.json = '/settings.json'
+      this.json = '/settings.json';
     }
 
     if (this.json.indexOf('/') === 0 || this.json.indexOf('https://') === 0 || this.json.indexOf('http://') === 0) {
@@ -76,14 +76,14 @@ export default class Mads {
       this.tags = '';
     }
 
-    this.id = this.generateUniqueId();
+    this.id = Mads.generateUniqueId();
     this.tracked = [];
     this.trackedEngagementType = [];
     this.engagementTypeExclude = [];
     this.firstEngagementTracked = false;
     this.content = document.getElementById('rma-widget');
     this.path = typeof window.rma !== 'undefined' ? window.rma.customize.src : '';
-    for (let i = 0; i < this.custTracker.length; i++) {
+    for (let i = 0; i < this.custTracker.length; i += 1) {
       if (this.custTracker[i].indexOf('{2}') !== -1) {
         this.custTracker[i] = this.custTracker[i].replace('{2}', '{{type}}');
       }
@@ -95,11 +95,11 @@ export default class Mads {
     const obs = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.target === this.content) {
-          for (let elem of this.content.querySelectorAll('*').values()) {
+          this.content.querySelectorAll('*').forEach((elem) => {
             if (elem.id) {
               this.elems[elem.id] = elem;
             }
-          }
+          });
           this.events();
           obs.disconnect();
         }
@@ -117,30 +117,35 @@ export default class Mads {
     this.head.appendChild(style);
   }
 
-  generateUniqueId() {
+  static generateUniqueId() {
     return +new Date();
   }
 
-  processTags(tags) {
-    let resultTags = '';
-    for (let tag in tags) {
-      if (tags.hasOwnProperty(tag)) {
-        resultTags += '&' + tag + '=' + tags[obj];
-      }
-    }
+  processTags() {
+    const tags = this.tags;
+    const resultTags = '';
+    tags.forEach((tag) => {
+      console.log(tag);
+      // if (tags.hasOwnProperty(tag)) {
+      //   resultTags += '&' + tag + '=' + tags[obj];
+      // }
+    });
+
     return resultTags;
   }
 
   linkOpener(url) {
-    if (typeof url !== 'undefined' && url !== '') {
+    let tmpUrl = url;
+    if (typeof tmpUrl !== 'undefined' && tmpUrl !== '') {
       if (typeof this.ct !== 'undefined' && this.ct !== '') {
-        this.url = url = this.ct + encodeURIComponent(url);
+        tmpUrl = this.ct + encodeURIComponent(tmpUrl);
+        this.url = tmpUrl;
       }
 
       if (typeof mraid !== 'undefined') {
-        mraid.open(url);
+        mraid.open(tmpUrl);
       } else {
-        window.open(url);
+        window.open(tmpUrl);
       }
 
       if (typeof this.cte !== 'undefined' && this.cte !== '') {
@@ -150,11 +155,12 @@ export default class Mads {
   }
 
   tracker(tt, type, name, value) {
-    name = name || type;
+    const tmpName = name || type;
+    let tmpValue = value;
 
     if (tt === 'E' && !this.fetTracked) {
-      for (let i = 0; i < this.fet.length; i++) {
-        let t = document.createElement('img');
+      for (let i = 0; i < this.fet.length; i += 1) {
+        const t = document.createElement('img');
         t.src = this.fet[i];
 
         t.style.display = 'none';
@@ -163,18 +169,19 @@ export default class Mads {
       this.fetTracked = true;
     }
 
-    if (typeof this.custTracker !== 'undefined' && this.custTracker !== '' && this.tracked.indexOf(name) === -1) {
-      for (let i = 0; i < this.custTracker.length; i++) {
-        let img = document.createElement('img');
+    if (typeof this.custTracker !== 'undefined' && this.custTracker !== '' && this.tracked.indexOf(tmpName) === -1) {
+      for (let i = 0; i < this.custTracker.length; i += 1) {
+        const img = document.createElement('img');
 
-        if (typeof value === 'undefined') {
-          value = '';
+        if (typeof tmpValue === 'undefined') {
+          tmpValue = '';
         }
 
         let src = this.custTracker[i].replace('{{rmatype}}', type);
-        src = src.replace('{{rmavalue}}', value);
+        src = src.replace('{{rmavalue}}', tmpValue);
 
-        if (this.trackedEngagementType.indexOf(tt) !== -1 || this.engagementTypeExclude.indexOf(tt) !== -1) {
+        if (this.trackedEngagementType.indexOf(tt) !== -1
+          || this.engagementTypeExclude.indexOf(tt) !== -1) {
           src = src.replace('tt={{rmatt}}', '');
         } else {
           src = src.replace('{{rmatt}}', tt);
@@ -182,23 +189,23 @@ export default class Mads {
         }
 
         if (!this.firstEngagementTracked && tt === 'E') {
-          src = src + '&ty=E';
+          src += '&ty=E';
           this.firstEngagementTracked = true;
         }
 
-        img.src = src + this.tags + '&' + this.id;
+        img.src = `${src + this.tags}&${this.id}`;
 
         img.style.display = 'none';
         this.body.appendChild(img);
 
-        this.tracked.push(name);
+        this.tracked.push(tmpName);
       }
     }
   }
 
   imageTracker(url) {
-    for (let i = 0; i < url.length; i++) {
-      let t = document.createElement('img');
+    for (let i = 0; i < url.length; i += 1) {
+      const t = document.createElement('img');
       t.src = url[i];
 
       t.style.display = 'none';
@@ -214,7 +221,7 @@ export default class Mads {
         this.head.appendChild(script);
         script.onload = () => {
           resolve(true);
-        }
+        };
       } catch (e) {
         reject(e);
       }

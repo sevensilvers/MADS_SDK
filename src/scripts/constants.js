@@ -1,10 +1,12 @@
-import {getParameterByName} from './utils.js'
+import { getParameterByName } from './utils';
 
-export default {
+const constants = {
   json: getParameterByName('json'),
   custTracker: getParameterByName('custTracker'),
   fet: getParameterByName('fet'),
   ct: getParameterByName('ct'),
   cte: getParameterByName('cte'),
-  tags: getParameterByName('tags')
-}
+  tags: getParameterByName('tags'),
+};
+
+export default constants;
