@@ -18,6 +18,10 @@ _optional_ Install Yarn
 ➜  npm start or yarn start
 ```
 
+Modify 'main.js' and see the live changes on your browsers
+
+render
+
 ## Deployment
 
 ```

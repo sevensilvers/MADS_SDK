@@ -73,7 +73,7 @@ export default class Mads {
     } else if (constants.tags) {
       this.tags = this.processTags(constants.tags);
     } else {
-      this.tags = '';
+      this.tags = {};
     }
 
     this.id = Mads.generateUniqueId();
@@ -110,26 +110,30 @@ export default class Mads {
 
     obs.observe(this.content, config);
 
-    this.render();
-    const cssText = this.style().replace(/(<br>|\s)/g, '');
-    const style = document.createElement('style');
-    style.innerText = cssText;
-    this.head.appendChild(style);
+    this.content.innerHTML = this.render();
+
+    const styles = this.style();
+    if (typeof styles === 'string') {
+      this.loadCSS(styles);
+    } else {
+      styles.forEach(style => this.loadCSS(style));
+    }
   }
 
   static generateUniqueId() {
     return +new Date();
   }
 
-  processTags() {
-    const tags = this.tags;
-    const resultTags = '';
-    tags.forEach((tag) => {
-      console.log(tag);
-      // if (tags.hasOwnProperty(tag)) {
-      //   resultTags += '&' + tag + '=' + tags[obj];
-      // }
+  processTags(tags) {
+    const tmpTags = tags || this.tags;
+    let resultTags = '';
+    Object.keys(tmpTags).forEach((tag) => {
+      if (tmpTags[tag]) {
+        resultTags += `&${tag}=${tmpTags[tag]}`;
+      }
     });
+
+    console.log(resultTags);
 
     return resultTags;
   }
@@ -231,11 +235,19 @@ export default class Mads {
   loadCSS(url) {
     return new Promise((resolve, reject) => {
       try {
-        const link = document.createElement('link');
-        link.href = url;
-        link.setAttribute('type', 'text/css');
-        link.setAttribute('rel', 'stylesheet');
-        this.head.appendChild(link);
+        if (url.indexOf('http') === 0) {
+          const link = document.createElement('link');
+          link.href = url;
+          link.setAttribute('type', 'text/css');
+          link.setAttribute('rel', 'stylesheet');
+          this.head.appendChild(link);
+        } else {
+          const cssText = url.replace(/(<br>|\s)/g, '');
+          const style = document.createElement('style');
+          style.innerText = cssText;
+          this.head.appendChild(style);
+        }
+
         resolve(true);
       } catch (e) {
         reject(e);
