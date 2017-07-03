@@ -11,7 +11,10 @@ module.exports = function (env) {
   var plugins = [
     new CopyWebpackPlugin([
       {from: 'index.html', to: 'dist/index.html'},
-      {from: 'settings.json', to: 'dist/settings.json'}
+      {from: 'settings.json', to: 'dist/settings.json'},
+      {from: 'src/img', to: env && env.production ? 'dist/img' : 'img'},
+      {from: 'src/js', to: env && env.production ? 'dist/js' : 'js'},
+      {from: 'src/css', to: env && env.production ? 'dist/css' : 'css'}
     ])
   ];
 
@@ -58,7 +61,11 @@ module.exports = function (env) {
             formatter: require('eslint-friendly-formatter')
           }
         },
-        {test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'}
+        {test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'},
+        {test: /\.css$/, use: ['style-loader', 'css-loader']},
+        {test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/, loader: 'url-loader', options: {
+          limit: 10000,
+        }}
       ]
     },
     plugins: plugins

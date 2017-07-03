@@ -1,4 +1,4 @@
-/* global document window XMLHttpRequest cte MutationObserver mraid */
+/* global document window XMLHttpRequest MutationObserver mraid */
 import constants from './constants';
 
 export default class Mads {
@@ -6,32 +6,15 @@ export default class Mads {
     this.body = document.getElementsByTagName('body')[0];
     this.head = document.getElementsByTagName('head')[0];
 
+    this.googleApiKey = 'AIzaSyCFHn5MNIYN-lGyTDTUYRAJM2fEKvHm-nE';
+
     // Get JSON value
     if (!constants.json && window.rma) {
       this.json = window.rma.customize.json;
     } else if (constants.json) {
       this.json = constants.json;
     } else {
-      this.json = '/settings.json';
-    }
-
-    if (this.json.indexOf('/') === 0 || this.json.indexOf('https://') === 0 || this.json.indexOf('http://') === 0) {
-      const xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-          if (xhr.status === 200) {
-            this.data = JSON.parse(xhr.responseText);
-            this.loadAd();
-          } else {
-            console.log('There was problem with the request.');
-          }
-        }
-      };
-      xhr.open('GET', this.json, true);
-      xhr.send();
-    } else {
-      this.data = constants.json;
-      this.loadAd();
+      this.json = './settings.json';
     }
 
     // Setup & get FET value
@@ -63,7 +46,7 @@ export default class Mads {
     if (constants.cte && window.rma) {
       this.cte = window.rma.cte;
     } else if (constants.cte) {
-      this.cte = cte;
+      this.cte = constants.cte;
     } else {
       this.cte = [];
     }
@@ -76,7 +59,7 @@ export default class Mads {
       this.tags = {};
     }
 
-    this.id = Mads.generateUniqueId();
+    this.id = this.generateUniqueId();
     this.tracked = [];
     this.trackedEngagementType = [];
     this.engagementTypeExclude = [];
@@ -89,6 +72,25 @@ export default class Mads {
       }
     }
     this.elems = {};
+
+    if (typeof this.json === 'string' && (this.json.indexOf('./') === 0 || this.json.indexOf('https://') === 0 || this.json.indexOf('http://') === 0)) {
+      const xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            this.data = JSON.parse(xhr.responseText);
+            this.loadAd();
+          } else {
+            console.log('There was problem with the request.'); // eslint-disable-line
+          }
+        }
+      };
+      xhr.open('GET', this.json, true);
+      xhr.send();
+    } else {
+      this.data = constants.json;
+      this.loadAd();
+    }
   }
 
   loadAd() {
@@ -100,6 +102,7 @@ export default class Mads {
               this.elems[elem.id] = elem;
             }
           });
+          if (this.postRender) this.postRender();
           this.events();
           obs.disconnect();
         }
@@ -110,17 +113,23 @@ export default class Mads {
 
     obs.observe(this.content, config);
 
-    this.content.innerHTML = this.render();
+    this.content.innerHTML = this.render().replace(/src="/g, `src="${this.path}`);
 
-    const styles = this.style();
-    if (typeof styles === 'string') {
-      this.loadCSS(styles);
+    const defaultStyles = 'body{padding:0;margin:0;}';
+    this.loadCSS(defaultStyles);
+    const style = this.style();
+    if (typeof style === 'string') {
+      this.loadCSS(style);
     } else {
-      styles.forEach(style => this.loadCSS(style));
+      style.forEach(_style => this.loadCSS(_style));
     }
   }
 
-  static generateUniqueId() {
+  resolve(path) {
+    return this.path + path;
+  }
+
+  generateUniqueId() { // eslint-disable-line class-methods-use-this
     return +new Date();
   }
 
@@ -133,15 +142,13 @@ export default class Mads {
       }
     });
 
-    console.log(resultTags);
-
     return resultTags;
   }
 
   linkOpener(url) {
     let tmpUrl = url;
     if (typeof tmpUrl !== 'undefined' && tmpUrl !== '') {
-      if (typeof this.ct !== 'undefined' && this.ct !== '') {
+      if (typeof this.ct !== 'undefined' && this.ct !== '' && this.ct.length !== 0) {
         tmpUrl = this.ct + encodeURIComponent(tmpUrl);
         this.url = tmpUrl;
       }
@@ -232,6 +239,28 @@ export default class Mads {
     });
   }
 
+  generateShortUrl(url) {
+    return new Promise((resolve, reject) => {
+      if (this.shortUrl) {
+        resolve(JSON.stringify({ id: this.shortUrl }));
+      } else {
+        try {
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', `https://www.googleapis.com/urlshortener/v1/url?key=${this.googleApiKey}`);
+          xhr.setRequestHeader('content-type', 'application/json');
+          xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              resolve(xhr.responseText);
+            }
+          };
+          xhr.send(JSON.stringify({ longUrl: url }));
+        } catch (e) {
+          reject(e);
+        }
+      }
+    });
+  }
+
   loadCSS(url) {
     return new Promise((resolve, reject) => {
       try {
@@ -242,7 +271,7 @@ export default class Mads {
           link.setAttribute('rel', 'stylesheet');
           this.head.appendChild(link);
         } else {
-          const cssText = url.replace(/(<br>|\s)/g, '');
+          const cssText = url.replace(/(<br>)/g, '');
           const style = document.createElement('style');
           style.innerText = cssText;
           this.head.appendChild(style);

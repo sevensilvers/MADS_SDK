@@ -24,5 +24,7 @@
     "webpack": "^2.6.1",
     "webpack-dev-server": "^2.4.5"
   },
-  "dependencies": {}
+  "dependencies": {
+    "mads": "file:./mads"
+  }
 }

@@ -1,6 +1,6 @@
 /* global window */
 
-import Mads from './scripts/mads';
+import Mads from 'mads';
 
 class AdUnit extends Mads {
   constructor() {
