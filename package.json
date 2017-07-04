@@ -18,13 +18,13 @@
     "eslint-config-airbnb-base": "^11.2.0",
     "eslint-friendly-formatter": "^3.0.0",
     "eslint-loader": "^1.8.0",
-    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-import": "^2.6.1",
     "friendly-errors-webpack-plugin": "^1.6.1",
     "uglifyjs-webpack-plugin": "^0.4.3",
     "webpack": "^2.6.1",
     "webpack-dev-server": "^2.4.5"
   },
   "dependencies": {
-    "mads": "file:./mads"
+    "mads-custom": "^1.0.0"
   }
 }
