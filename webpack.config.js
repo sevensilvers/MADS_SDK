@@ -10,11 +10,11 @@ module.exports = function (env) {
 
   var plugins = [
     new CopyWebpackPlugin([
-      {from: 'index.html', to: 'dist/index.html'},
-      {from: 'settings.json', to: 'dist/settings.json'},
-      {from: 'src/img', to: env && env.production ? 'dist/img' : 'img'},
-      {from: 'src/js', to: env && env.production ? 'dist/js' : 'js'},
-      {from: 'src/css', to: env && env.production ? 'dist/css' : 'css'}
+      { from: 'index.html', to: 'dist/index.html' },
+      { from: 'settings.json', to: 'dist/settings.json' },
+      { from: 'src/img', to: env && env.production ? 'dist/img' : 'img' },
+      { from: 'src/js', to: env && env.production ? 'dist/js' : 'js' },
+      { from: 'src/css', to: env && env.production ? 'dist/css' : 'css' }
     ])
   ];
 
@@ -41,7 +41,7 @@ module.exports = function (env) {
   return {
     entry: './src/main.js',
     output: {
-      filename: env && env.production ? 'dist/js/bundle.js' : 'js/bundle.js',
+      filename: env && env.production ? 'dist/js/main.js' : 'js/main.js',
       libraryTarget: 'var',
     },
     devtool: env && env.production ? '' : 'cheap-eval-source-map',
@@ -61,11 +61,23 @@ module.exports = function (env) {
             formatter: require('eslint-friendly-formatter')
           }
         },
-        {test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'},
-        {test: /\.css$/, use: ['style-loader', 'css-loader']},
-        {test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/, loader: 'url-loader', options: {
-          limit: 10000,
-        }}
+        { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' },
+        {
+          test: /\.css$/, exclude: /node_modules/, use: ['style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1,
+            },
+          }, 'postcss-loader']
+        },
+        {
+          test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+          loader: 'url-loader',
+          options: {
+            limit: 10000,
+          }
+        }
       ]
     },
     plugins: plugins

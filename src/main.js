@@ -1,6 +1,6 @@
 /* global window */
-
-import Mads from 'mads';
+import Mads from 'mads-custom';
+import './main.css';
 
 class AdUnit extends Mads {
   constructor() {
@@ -21,7 +21,7 @@ class AdUnit extends Mads {
     this.linkOpener('http://www.google.com');
 
     return `
-      <div class="container" id="container">
+      <div class="container" id="ad-container">
         <div class="jumbotron">
           <h1>${this.data.title}</h1>
           <p>${this.data.sample}</p>
